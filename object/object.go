@@ -6,8 +6,8 @@ type ObjectType string
 
 const (
 	INTEGER_OBJ = "INTEGER"
-	BOOLEAN_OBJ = "BOOLEAN"
 	NULL_OBJ    = "NULL"
+	BOOLEAN_OBJ = "BOOLEAN"
 )
 
 type Object interface {
