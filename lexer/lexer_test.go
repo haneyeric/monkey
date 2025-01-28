@@ -26,6 +26,9 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
+"kobe"
+"kobe bean"
+[1, 2];
 `
 
 	tests := []struct {
@@ -104,6 +107,14 @@ if (5 < 10) {
 		{token.INT, "10"},
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+		{token.STRING, "kobe"},
+		{token.STRING, "kobe bean"},
+		{token.LBRACKET, "["},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.RBRACKET, "]"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
