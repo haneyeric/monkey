@@ -29,6 +29,7 @@ if (5 < 10) {
 "kobe"
 "kobe bean"
 [1, 2];
+{"goat": "kobe"}
 `
 
 	tests := []struct {
@@ -116,6 +117,11 @@ if (5 < 10) {
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
 		{token.SEMICOLON, ";"},
+		{token.LBRACE, "{"},
+		{token.STRING, "goat"},
+		{token.COLON, ":"},
+		{token.STRING, "kobe"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 
