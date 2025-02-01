@@ -3,6 +3,7 @@ package object
 import (
 	"bytes"
 	"fmt"
+	"hash/fnv"
 	"strings"
 
 	"github.com/haneyeric/monkey/ast"
@@ -18,6 +19,7 @@ const (
 	STRING_OBJ       = "STRING"
 	BUILTIN_OBJ      = "BUILTIN"
 	ARRAY_OBJ        = "ARRAY"
+	HASH_OBJ         = "HASH"
 )
 
 type ObjectType string
@@ -26,6 +28,10 @@ type BuiltinFunction func(args ...Object) Object
 type Object interface {
 	Type() ObjectType
 	Inspect() string
+}
+
+type Hashable interface {
+	HashKey() HashKey
 }
 
 type Builtin struct {
@@ -65,6 +71,20 @@ type String struct {
 
 type Array struct {
 	Elements []Object
+}
+
+type HashKey struct {
+	Type  ObjectType
+	Value uint64
+}
+
+type HashPair struct {
+	Key   Object
+	Value Object
+}
+
+type Hash struct {
+	Pairs map[HashKey]HashPair
 }
 
 type Null struct{}
@@ -154,5 +174,37 @@ func (ao *Array) Inspect() string {
 	out.WriteString("[")
 	out.WriteString(strings.Join(elements, ", "))
 	out.WriteString("]")
+	return out.String()
+}
+
+func (b *Boolean) HashKey() HashKey {
+	var value uint64
+	if b.Value {
+		value = 1
+	} else {
+		value = 0
+	}
+	return HashKey{Type: b.Type(), Value: value}
+}
+func (i *Integer) HashKey() HashKey {
+	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
+}
+func (s *String) HashKey() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+	return HashKey{Type: s.Type(), Value: h.Sum64()}
+}
+
+func (h *Hash) Type() ObjectType { return HASH_OBJ }
+func (h *Hash) Inspect() string {
+	var out bytes.Buffer
+	pairs := []string{}
+	for _, pair := range h.Pairs {
+		pairs = append(pairs, fmt.Sprintf("%s: %s",
+			pair.Key.Inspect(), pair.Value.Inspect()))
+	}
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 	return out.String()
 }
